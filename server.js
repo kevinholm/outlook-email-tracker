@@ -23,3 +23,6 @@ app.get("/track/:id", (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`Pixel server running on port ${PORT}`));
+app.get("/generator", (req, res) => {
+  res.sendFile(path.join(__dirname, "generator.html"));
+});
