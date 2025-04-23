@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Email Tracker Dashboard</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 8px; }
+    input { padding: 6px; width: 250px; }
+    #export { margin-left: 20px; padding: 6px 12px; }
+    .notif { background: #ffffcc; padding: 10px; margin-bottom: 10px; border: 1px solid #aaa; }
+  </style>
+</head>
+<body>
+  <h2>Email Tracker Dashboard (Live)</h2>
+  <div id="notificationArea"></div>
+  <input id="search" placeholder="Search by ID, IP or date..." />
+  <button id="export" onclick="window.location.href='/export'">⬇️ Export CSV</button>
+  <table>
+    <thead>
+      <tr><th>Timestamp</th><th>ID</th><th>IP</th><th>User Agent</th></tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+  <script>
+    let allData = [];
+    const tbody = document.getElementById("tableBody");
+    const searchInput = document.getElementById("search");
+    const notifArea = document.getElementById("notificationArea");
+
+    function render(data) {
+      tbody.innerHTML = data.map(d =>
+        `<tr><td>${d.timestamp}</td><td>${d.id}</td><td>${d.ip}</td><td>${d.ua}</td></tr>`
+      ).join("");
+    }
+
+    function addNotif(data) {
+      const div = document.createElement("div");
+      div.className = "notif";
+      div.innerText = `Mail opened! ID: ${data.id}, IP: ${data.ip}, Time: ${data.timestamp}`;
+      notifArea.prepend(div);
+      setTimeout(() => div.remove(), 10000);
+    }
+
+    async function loadData() {
+      const res = await fetch("/data");
+      allData = await res.json();
+      render(allData);
+    }
+
+    searchInput.addEventListener("input", () => {
+      const q = searchInput.value.toLowerCase();
+      const filtered = allData.filter(d => Object.values(d).some(v => v.toLowerCase().includes(q)));
+      render(filtered);
+    });
+
+    const ws = new WebSocket(`wss://${window.location.host}`);
+    ws.onmessage = e => {
+      const d = JSON.parse(e.data);
+      allData.unshift(d);
+      render(allData);
+      addNotif(d);
+    };
+
+    loadData();
+  </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SMTP Config</title>
+  <style>body { font-family: sans-serif; padding: 20px; max-width: 500px; }</style>
+</head>
+<body>
+  <h2>Configure SMTP Settings</h2>
+  <form id="configForm">
+    <label>SMTP Host: <input name="SMTP_HOST" required></label><br><br>
+    <label>SMTP Port: <input name="SMTP_PORT" required></label><br><br>
+    <label>SMTP User: <input name="SMTP_USER" required></label><br><br>
+    <label>SMTP Pass: <input type="password" name="SMTP_PASS" required></label><br><br>
+    <label>Email To: <input name="EMAIL_TO" required></label><br><br>
+    <button type="submit">Save Settings</button>
+  </form>
+  <p><strong>Note:</strong> This form only works if you hook it up to a secure backend that writes environment variables in Railway.</p>
+</body>
+</html>
